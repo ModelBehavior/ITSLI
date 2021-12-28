@@ -1,0 +1,83 @@
+---
+title: "Chapter2 Questions"
+output: html_notebook
+---
+
+# Conceptual
+
+## Problem 1
+a. We would expect a very flexible model to do well in this case if the data is highly non-linear, since n is large and very flexible methods need large amounts of data. 
+b. We would expect a less flexible model to do better in this case since we do not have a lot of data points. Deminsion reduction methods could be used.
+c. We expect a very flexible method to do better in this case due to the high non-linearity.
+d. We expect a less flexible method to do better, since the variance is high we can introduce more bias.
+
+## Problem 2
+a. This is a regression problem, we are intrested in inference on CEO salary (n = 500, p = 3)
+
+b. This is a classification problem, we are intrested in prediction of product success or failure (n = 20, p = 13)
+
+c. This is a regression problem, we are intrested in prediction of the % change in the usd/euro exchange rate (n = 52, p = 3)
+
+## Problem 4
+
+a. 
+1.) Predict if an email is spam or ham: The goal is prediction. Possible predictors would be the tokens of the message being recieved.
+2.) Predict default on credit card payment: The goal is prediction and inference, we are intrested in how the predictors effect if a person is more likely to default, so we can determine who are the best people to give credit cards to. possible predictors would be past default status, income, eduaction, amount of debt a person has etc.
+3.) Predict if a person has disease A or not, this could be prediction and inference. we can see how the variables effect the probability of having disease A. Possible predictors are information we get from scans, temperature of individual, anyother test that maybe relavent in determining disease state.
+
+b.
+1.) Predict plant growth: goal is inference. Possible predictors are land, fertilizer
+2.) Predict body fat: goal is prediction. Possible predictors height, weight, length measurements
+3.) predict future income: goal is prediction. Possible predictors previous income
+
+c.
+customer segmentation: possible predictors region, price, gender, time of year.
+
+## Problem 5
+
+Very flexible models are less interpretable, but dont require the analyst to pre-specify a form. A more flexible approach is preferred when the data is highly non-linear, or prediction is our main goal. A less flexible approach may be preffered if the form of the model is known before hand, or inference is our main objective.
+
+## Problem 6
+
+Parametric approach assumes a form for the data, such as linear, while non-parametric method make no assumpton about the form of the model. Parametric approach is easier to implement and understand, and has nice equations for confidence intervals/ prediction intervals. If the speficied form of the model is far from the true form then the estimates wont be good.
+
+# Applied
+
+## Problem 9
+a. name is the only qualitative predictor all the others are numeric
+
+b. The Range for the numeric predictors are show in the descriptive statistics table
+
+c. This is shown in the Descriptive Statistics Table 1
+
+d. This is shown in the Descriptive Statistics Table 2
+
+e. A lot of the predictors have a strong linear correlation, some of the predictors and the response show nonlinearity in the scatterplots.
+
+f. cylinders, displacement, horsepower, and weight are all good candidates for being good predictors of mpg based of the r values
+
+```{r}
+library(tidyverse)
+data(Auto, package = "ISLR") # load data for Auto dataset
+
+pastecs::stat.desc(Auto,basic = TRUE) %>% 
+  knitr::kable(caption = "Descriptive Statistics Table 1")
+
+Auto %>% 
+  as_tibble() %>% 
+  mutate(index = row_number()) %>% 
+  filter(index %in% c(10:85)) -> temp
+
+Auto %>% 
+  as_tibble() %>% 
+  mutate(index = row_number()) %>% 
+  anti_join(temp) %>% 
+  pastecs::stat.desc() %>% 
+  select(-index,-name) %>% 
+  knitr::kable(caption = "Descriptive Statistics Table 2")
+
+Auto %>% 
+  select_if(~is.numeric(.)) %>% 
+  GGally::ggpairs(progress = FALSE)
+
+```
