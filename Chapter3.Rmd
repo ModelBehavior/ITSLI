@@ -1,0 +1,105 @@
+---
+title: "Chapter3"
+output: html_notebook
+---
+
+# Conceptual
+
+## Problem 2
+
+KNN Regression attempts to estimate E[Y|X1...Xp] using the local average. KNN Classification attempts to estimate P(Y|x1...Xp) using local probability.
+
+## Problem 3
+
++ a \
+female = 1, male = 0 \
+full equation: starting salary = $50 + 20*GPA + 0.07*IQ + 35*Gender + 0.01*GPA*IQ -10*GPA*Gender$ \
+(gender = female): $85 + 10*GPA + 0.07*IQ + 0.01*GPA*IQ$ \
+(gender = male):   $50 + 20*GPA + 0.07*IQ + 0.01*GPA*IQ$ \
+
+solving $50 + 20*GPA > 85 + 10*GPA$ => gpa > 3.5 males on average will have higher starting salaries. (iii)
+
++ b \
+85 + 10(4.0) + 0.07(110) + 0.01(4.0)(110) = 137.1, which gives us a starting salary of $137,100
+
++ c \
+False, we need to do a hypothesis test $\hat{\beta_4} = 0$
+
+## Problem 4
+
++ a \
+
+We expect the linear model  to have a lower RSS, since the true model is linear.
+
++ b \
+
+Not enough information, if the test data is close to the training, we would expect the RSS to be lower for the linear model.
+
++ c \
+
+Not enough information
+
+ + d \
+ 
+ Not enough information
+ 
+ ## Problem 10
+```{r include=FALSE, echo=FALSE}
+library(tidyverse)
+
+data(Carseats, package = "ISLR")
+
+Carseats %>% 
+  janitor::clean_names() -> df
+
+mod1 <- lm(sales ~ price + urban + us, data = df)
+```
+
++ a
+
+```{r}
+jtools::summ(mod1, digits = 4)
+```
+ 
+ + b \
+Holding all other predictors fixed, for a $1 dollar increase in price, average unit sales decrease by 54.5 units in sales. \
+the average sales for non-urban is estimated to be 13043.5, whereas urban are estimated to carry a decrease of 21.9 unit sales for an estimate of 13021.1 units. The P-value is high, this indicates that there is no statistical evidence of a difference in  average unit sales between urban and non-urban areas. \
+The average unit sales for non-US stores is estimated to be 13043.5, whereas US stores are estimated to carry 1200.6 additional unit sales for an estimate of 14244.1 unit sales. The P-value is small, this indicates that there is statistical evidence of a difference in average unit sales between US stores and non-US stores.
+
+
++ c \
+$sales = 13.0435 + -0.0545*price + -0.0219*urban + 1.2006*us$
+
++ d \
+rej H0 for price and US
+
++ e \
+
+table below
+
++ f \
+model without Urban variable has a higher R2 and lower s, we can say about 24% of the sample variation in unit sales is explained by this model, and approximately 95% of unit sales fall within $\pm$ 4.938 (2s) of there respected predicted values.
+
++ g \
+table below
+```{r}
+mod2 <- lm(sales ~ price + us, data = df)
+
+jtools::summ(mod2, confint = TRUE, vif = TRUE)
+```
+
+h \
+From the residual plots, we can see evidence  of outliers and influential observations using the sresiduals vs leverage plot, as well as, the residuals vs fitted values plot.
+```{r}
+plot(mod2) # Residual Plots for model 2
+
+mean_leverage <- as.data.frame(hatvalues(mod2)) %>% 
+  summarise(mean = mean(`hatvalues(mod2)`))
+
+# 20 influential points
+as.data.frame(hatvalues(mod2)) %>% 
+  filter(`hatvalues(mod2)` > 0.015) %>% 
+  rename(leverage = `hatvalues(mod2)`)
+```
+
+
